@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectService.Domain.Departments;
 using Shared;
 
 namespace DirectService.Domain.Positions;
@@ -17,11 +16,7 @@ public class Position
     
     // EF Core
     private Position() { }
-    
-    private List<Department> _departments = [];
-    
-    public IReadOnlyList<Department> Departments => _departments;
-    
+
     public Guid Id { get; private set; }
     
     public string Name { get; private set; }
@@ -39,28 +34,6 @@ public class Position
         IsActive = active;
         
         UpdatedAt= DateTime.UtcNow;
-    }
-    
-    public void SetDepartment(Department department)
-    {
-        _departments!.Add(department);
-    }
-    
-    public Result<Guid, Error> DeletePositions(Department department)
-    {
-        if (_departments != null)
-        {
-            foreach (var currentDepartment in _departments)
-            {
-                if (currentDepartment.Id == department.Id)
-                {
-                    _departments.Remove(currentDepartment);
-
-                    return Result.Success<Guid, Error>(currentDepartment.Id);
-                }
-            }
-        }
-        return Error.NotFound(null, $"Department with id: {department.Id} does not exist.", null);
     }
     
     public Result<Position, Error> Update(string name, string? description)

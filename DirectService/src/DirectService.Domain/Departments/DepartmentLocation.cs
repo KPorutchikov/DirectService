@@ -9,7 +9,9 @@ public class DepartmentLocation
         LocationId = locationId;
         CreatedAt = DateTime.UtcNow;
     }
-    
+
+    // EF Core
+    private DepartmentLocation() { }
     public Guid Id { get; }
     public Department Department { get; set; }
     public Guid LocationId { get; set; }

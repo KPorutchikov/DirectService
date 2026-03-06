@@ -52,7 +52,7 @@ public class Department
     
     public Path Path { get; private set; } = null!;
     
-    public short Depth { get; private set; }
+    public short? Depth { get; private set; }
     
     public bool IsActive { get; private set; }
     
@@ -158,8 +158,8 @@ public record DepartmentName
 
     public static Result<DepartmentName, Error> Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length < 3 || name.Length > 150) 
-            return Error.Validation(null, "Name must be between 3-150 characters.", "Name");
+        if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length150) 
+            return Error.Validation(null, $"Name must be between {LengthConstants.Length3}-{LengthConstants.Length150} characters.", "Name");
         
         return new DepartmentName(name);  
     }
@@ -182,9 +182,6 @@ public record Path
 
 public record Identifier
 {
-    public const int MIN_LENGTH_IDENTIFIER = 3;
-    public const int MAX_LENGTH_IDENTIFIER = 150;
-
     public string Value { get; }
 
     private Identifier(string value)
@@ -194,8 +191,8 @@ public record Identifier
 
     public static Result<Identifier, Error> Create(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length < MIN_LENGTH_IDENTIFIER || value.Length > MAX_LENGTH_IDENTIFIER) 
-            return Error.Validation(null, $"Identifier must be between {MIN_LENGTH_IDENTIFIER}-{MAX_LENGTH_IDENTIFIER} characters.", "Identifier");
+        if (string.IsNullOrWhiteSpace(value) || value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150) 
+            return Error.Validation(null, $"Identifier must be between {LengthConstants.Length3}-{LengthConstants.Length150} characters.", "Identifier");
 
         if (!value.All(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
             return Error.Validation(null, "Identifier must consist of latin characters only.", "Identifier");

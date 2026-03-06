@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectService.Domain.Departments;
 using Shared;
 
 namespace DirectService.Domain.Locations;
@@ -19,10 +18,6 @@ public class Location
     // EF Core
     private Location() { }
     
-    private List<Department> _departments = [];
-    
-    public IReadOnlyList<Department> Departments => _departments;
-    
     public Guid Id { get; private set; }
     
     public LocationName Name { get; private set; }
@@ -37,13 +32,6 @@ public class Location
     
     public DateTime? UpdatedAt { get; private set; }
 
-    public void SetDepartments(Department department)
-    {
-        _departments.Add(department);
-        
-        UpdatedAt= DateTime.UtcNow;
-    }
-
     public void SetActive(bool active)
     {
         IsActive = active;
@@ -51,23 +39,6 @@ public class Location
         UpdatedAt= DateTime.UtcNow;
     }
     
-    public Result<Guid, Error> DeleteDepartments(Department department)
-    {
-        if (_departments != null)
-            foreach (var currentDepartment in _departments)
-            {
-                if (currentDepartment.Id == department.Id)
-                {
-                    _departments.Remove(currentDepartment);
-                    
-                    UpdatedAt= DateTime.UtcNow;
-
-                    return Result.Success<Guid, Error>(currentDepartment.Id);
-                }
-            }
-        return Error.NotFound(null, $"Department with id: {department.Id} does not exist.", null);
-    }
-
     public Result<Location, Error> Update(LocationName name, Address address, TimeZone timeZone)
     {
         Name = name;
@@ -97,7 +68,7 @@ public record LocationName
 
     public static Result<LocationName, Error> Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length < 3 || name.Length > 120) 
+        if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length120) 
             return Error.Validation(null, "Name must be between 3-120 characters.", "Name");
         
         return new LocationName(name);

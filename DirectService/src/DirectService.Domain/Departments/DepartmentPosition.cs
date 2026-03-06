@@ -10,6 +10,8 @@ public class DepartmentPosition
         CreatedAt = DateTime.UtcNow;
     }
     
+    // EF Core
+    private DepartmentPosition() { }
     public Guid Id { get; }
     public Department Department { get; set; }
     public Guid PositionId { get; set; }
