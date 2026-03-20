@@ -49,7 +49,7 @@ public class Location
         return Result.Success<Location, Error>(this);
     }
 
-    public Result<Location, Error> Create(Guid id, LocationName name, Address address, TimeZone timeZone)
+    public static Result<Location, Error> Create(Guid id, LocationName name, Address address, TimeZone timeZone)
     {
         if (id == Guid.Empty) return Error.Validation(null, "ID cannot be null or empty.", "Id");
         
