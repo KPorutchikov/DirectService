@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace DirectService.Presentation;
+namespace DirectService.Presentation.Departments;
 
 [ApiController]
 [Route("[controller]")]

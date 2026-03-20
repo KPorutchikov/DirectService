@@ -7,8 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DirectService.Contracts\DirectService.Contracts.csproj" />
       <ProjectReference Include="..\DirectService.Domain\DirectService.Domain.csproj" />
       <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
     </ItemGroup>
 
 </Project>
