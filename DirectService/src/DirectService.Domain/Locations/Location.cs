@@ -51,7 +51,7 @@ public class Location
 
     public static Result<Location, Error> Create(Guid id, LocationName name, Address address, TimeZone timeZone)
     {
-        if (id == Guid.Empty) return Error.Validation(null, "ID cannot be null or empty.", "Id");
+        if (id == Guid.Empty) return GeneralErrors.ValueIsInvalid("Id");
         
         return new Location(id, name, address, timeZone);
     }
@@ -69,7 +69,7 @@ public record LocationName
     public static Result<LocationName, Error> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length120) 
-            return Error.Validation(null, "Name must be between 3-120 characters.", "Name");
+            return GeneralErrors.ValueIsInvalid("LocationName");
         
         return new LocationName(name);
     }
@@ -86,8 +86,8 @@ public record Address
 
     public static Result<Address, Error> Create(string address)
     {
-        if (string.IsNullOrWhiteSpace(address)) 
-            return Error.Validation(null, "Address cannot be null or empty.", "Address");
+        if (string.IsNullOrWhiteSpace(address))
+            return GeneralErrors.ValueIsInvalid("Address"); 
         
         return new Address(address);
     }
