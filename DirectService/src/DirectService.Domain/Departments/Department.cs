@@ -141,7 +141,7 @@ public class Department
         Guid id, Guid parentId, DepartmentName departmentName, Identifier identifier, Path path, short depth, 
         IEnumerable<Guid> locations, IEnumerable<Guid> positions)
     {
-        if (id == Guid.Empty) return Error.Validation(null, "ID cannot be null or empty.", "Id");
+        if (id == Guid.Empty) return GeneralErrors.ValueIsInvalid("DepartmentId");
         
         return new Department( id, parentId, departmentName, identifier, path, depth, locations, positions);
     }
@@ -159,14 +159,15 @@ public record DepartmentName
     public static Result<DepartmentName, Error> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length150) 
-            return Error.Validation(null, $"Name must be between {LengthConstants.Length3}-{LengthConstants.Length150} characters.", "Name");
-        
+            return GeneralErrors.ValueIsInvalid("DepartmentName");
+
         return new DepartmentName(name);  
     }
 }
 
 public record Path
 {
+    private const char Separator = '/';
     public string Value { get; }
 
     private Path(string value)
@@ -174,9 +175,14 @@ public record Path
         Value = value;
     }
 
-    public static Result<Path, Error> Create(string path)
+    public static Path CreateParent(Identifier identifier)
     {
-        return new Path(path);
+        return new Path(identifier.Value);
+    }
+
+    public Path CreateChild(Identifier childIdentifier)
+    {
+        return new Path(Value + Separator + childIdentifier.Value);
     }
 }
 
@@ -192,10 +198,11 @@ public record Identifier
     public static Result<Identifier, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150) 
-            return Error.Validation(null, $"Identifier must be between {LengthConstants.Length3}-{LengthConstants.Length150} characters.", "Identifier");
+            return GeneralErrors.ValueIsInvalid("Identifier");
 
         if (!value.All(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
-            return Error.Validation(null, "Identifier must consist of latin characters only.", "Identifier");
+            return GeneralErrors.ValueIsInvalid("Identifier");
+        
         return new Identifier(value);
     }
 }
