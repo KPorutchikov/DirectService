@@ -2,6 +2,7 @@
 using DirectService.Contracts.Locations;
 using DirectService.Domain.Locations;
 using FluentValidation;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Shared;
 using TimeZone = DirectService.Domain.Locations.TimeZone;
@@ -23,25 +24,28 @@ public class CreateLocationHandler
         _logger = logger;
     }
 
-    public async Task<Result<Guid, Error>> Handler(CreateLocationDto locationDto, CancellationToken ct)
+    public async Task<Result<Guid, Errors>> Handler(CreateLocationDto locationDto, CancellationToken ct)
     {
          var validationResult = await _validator.ValidateAsync(locationDto, ct);
          if (!validationResult.IsValid)
          {
-             _logger.LogError("Validate a location is failed: {err}", validationResult.Errors.ToString());
-             
-             return Error.Validation("location.create", validationResult.Errors.ToString()!);
+             var errors = validationResult.Errors
+                 .Select(e => new ErrorMessage(e.ErrorCode, e.ErrorMessage, e.PropertyName)).ToArray();
+
+             _logger.LogError("Validate a location is failed: {err}", JsonSerializer.Serialize(errors));
+
+             return Error.Validation(errors).ToErrors();
          }
         
         var locationId = Guid.NewGuid();
-
+        
         var location = Location.Create(
             locationId, 
             LocationName.Create(locationDto.Name).Value, 
             Address.Create(locationDto.Address).Value, 
-            TimeZone.Create(locationDto.TimeZone).Value).Value;
+            TimeZone.Create(locationDto.TimeZone).Value);
         
-        await _locationsRepository.Add(location, ct);
+        await _locationsRepository.Add(location.Value, ct);
 
         _logger.LogInformation("Location {id} has been created", locationId);
 
