@@ -8,7 +8,8 @@ public record Error
 {
     public const string SEPARATOR = "||";
     public IReadOnlyList<ErrorMessage> Messages { get; } = [];
-    
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ErrorType Type { get; }
 
     private Error(IEnumerable<ErrorMessage> messages, ErrorType type)
@@ -16,6 +17,8 @@ public record Error
         Messages = messages.ToArray();
         Type = type;
     }
+    
+    public string GetMessage() => string.Join("; ", Messages.Select(m => m.ToString()));
 
     public static Error NotFound(string code, string messages, string? invalidField = null) =>
         new([new ErrorMessage(code, messages, invalidField)], ErrorType.NOT_FOUND);

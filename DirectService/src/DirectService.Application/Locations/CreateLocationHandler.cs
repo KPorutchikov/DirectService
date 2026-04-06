@@ -29,12 +29,12 @@ public class CreateLocationHandler
          var validationResult = await _validator.ValidateAsync(locationDto, ct);
          if (!validationResult.IsValid)
          {
-             var errors = validationResult.Errors
-                 .Select(e => new ErrorMessage(e.ErrorCode, e.ErrorMessage, e.PropertyName)).ToArray();
+             var error = Error.Validation(validationResult.Errors
+                 .Select(e => new ErrorMessage(e.ErrorCode, e.ErrorMessage, e.PropertyName)));
 
-             _logger.LogError("Validate a location is failed: {err}", JsonSerializer.Serialize(errors));
+             _logger.LogError("Validate a location is failed: {err}", JsonSerializer.Serialize(error));
 
-             return Error.Validation(errors).ToErrors();
+             return error.ToErrors();
          }
         
         var locationId = Guid.NewGuid();

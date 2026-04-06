@@ -28,7 +28,7 @@ public static class GeneralErrors
     
     public static Error Failure(string? name = null)
     {
-        return Error.Failure("value.is.failure", "Ошибка");
+        return Error.Failure("value.is.failure", name ?? "Ошибка");
     }
     
     
