@@ -1,17 +1,32 @@
+using System.Globalization;
 using DirectService.Application;
 using DirectService.Application.Locations;
 using DirectService.Infrastructure;
 using DirectService.Infrastructure.Database;
 using DirectService.Infrastructure.Locations;
 using DirectService.Presentation;
+using DirectService.Web.Middlewares;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
 using Shared;
 
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi(options =>
-{ 
-    options.AddSchemaTransformer((schema, context, _) =>
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
+
+try
+{
+    Log.Information("Starting web application");
+
+    var builder = WebApplication.CreateBuilder(args);
+    
+    builder.Services.AddOpenApi(options =>
+    { 
+        options.AddSchemaTransformer((schema, context, _) =>
         {  
             if (context.JsonTypeInfo.Type == typeof(Envelope<Errors>))
             {
@@ -26,30 +41,51 @@ builder.Services.AddOpenApi(options =>
             }
             return Task.CompletedTask;
         });
-});
+    });
 
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddPresentation();
+    builder.Services.AddSerilog((services, lc) => lc
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.WithExceptionDetails()
+        .Enrich.WithProperty("ServiceName", "DirectService"));
 
-builder.Services.AddOpenApi();
-builder.Services.AddApplication();
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddPresentation();
 
-builder.Services.AddScoped<DirectServiceDbContext>(_ => 
-                        new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
+    builder.Services.AddOpenApi();
+    builder.Services.AddApplication();
 
-builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
-builder.Services.AddScoped<CreateLocationHandler>();
+    builder.Services.AddScoped<DirectServiceDbContext>(_ => 
+        new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
 
-var app = builder.Build();
+    builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
+    builder.Services.AddScoped<CreateLocationHandler>();
 
-if (app.Environment.IsDevelopment())
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+    app.UseExceptionMiddleware();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DirectService"));
+    }
+
+    app.MapControllers();
+    app.Run();
+}
+catch (Exception ex)
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DirectService"));
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
 
-app.MapControllers();
-app.Run();
+
 
 
 
