@@ -35,12 +35,12 @@ namespace DirectService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    location_name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    address = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    timezone = table.Column<string>(type: "text", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    address = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
-                    location_name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
-                    timezone = table.Column<string>(type: "text", nullable: false)
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -134,6 +134,18 @@ namespace DirectService.Infrastructure.Migrations
                 name: "IX_department_positions_position_id",
                 table: "department_positions",
                 column: "position_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_locations_address_unique",
+                table: "locations",
+                column: "address",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_locations_location_name_unique",
+                table: "locations",
+                column: "location_name",
+                unique: true);
         }
 
         /// <inheritdoc />

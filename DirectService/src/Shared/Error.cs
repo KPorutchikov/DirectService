@@ -57,4 +57,9 @@ public record Error
         new(messages, ErrorType.AUTHORIZATION);
     
     public Errors ToErrors() => new([this]);
+    
+    public string Serialize()
+    {
+        return string.Join(SEPARATOR, GetMessage());
+    }
 }

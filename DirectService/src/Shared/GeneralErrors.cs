@@ -3,10 +3,10 @@
 public static class GeneralErrors
 {
 
-    public static Error ValueIsInvalid(string? name = null)
+    public static Error ValueIsInvalid(string? name = null, string? message = null)
     {
-        string label = name ?? "значение";
-        return Error.Validation("value.is.invalid", $"{label} недействительно", name);
+        string label = name ?? "Значение";
+        return Error.Validation("value.is.invalid", $"{label} недействительно{". "+message}", name);
     }
     
     public static Error NotFound(Guid? id = null, string? name = null)
