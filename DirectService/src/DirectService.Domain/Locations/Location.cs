@@ -69,7 +69,7 @@ public record LocationName
     public static Result<LocationName, Error> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length120) 
-            return GeneralErrors.ValueIsInvalid("LocationName");
+            return GeneralErrors.ValueIsInvalid("LocationName","Name must be between 3 and 120 characters");
         
         return new LocationName(name);
     }

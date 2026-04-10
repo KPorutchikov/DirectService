@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectServiceDbContext))]
-    [Migration("20260404154251_Initial")]
+    [Migration("20260410100111_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -167,38 +167,6 @@ namespace DirectService.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Address", "DirectService.Domain.Locations.Location.Address#Address", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(120)
-                                .HasColumnType("character varying(120)")
-                                .HasColumnName("address");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "DirectService.Domain.Locations.Location.Name#LocationName", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(120)
-                                .HasColumnType("character varying(120)")
-                                .HasColumnName("location_name");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("TimeZone", "DirectService.Domain.Locations.Location.TimeZone#TimeZone", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("timezone");
-                        });
-
                     b.HasKey("Id")
                         .HasName("id_locations");
 
@@ -272,6 +240,82 @@ namespace DirectService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("DirectService.Domain.Locations.Location", b =>
+                {
+                    b.OwnsOne("DirectService.Domain.Locations.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("address");
+
+                            b1.HasKey("LocationId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique()
+                                .HasDatabaseName("IX_locations_address_unique");
+
+                            b1.ToTable("locations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.OwnsOne("DirectService.Domain.Locations.LocationName", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("location_name");
+
+                            b1.HasKey("LocationId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique()
+                                .HasDatabaseName("IX_locations_location_name_unique");
+
+                            b1.ToTable("locations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.OwnsOne("DirectService.Domain.Locations.TimeZone", "TimeZone", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("timezone");
+
+                            b1.HasKey("LocationId");
+
+                            b1.ToTable("locations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
+
+                    b.Navigation("TimeZone")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DirectService.Domain.Departments.Department", b =>
