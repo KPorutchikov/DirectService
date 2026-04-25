@@ -8,4 +8,6 @@ public interface ILocationsRepository
 {
     public Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken = default);
     
+    public Task<Result<Location, Error>> GetById(Guid locationId, CancellationToken cancellationToken = default);
+    
 }

@@ -15,33 +15,43 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         
         builder.Property(d => d.Id).HasColumnName("id");
 
-        builder.ComplexProperty(c => c.DepartmentName, d =>
+        // DepartmentName
+        builder.OwnsOne(l => l.DepartmentName, nameBuilder =>
         {
-            d.Property(p => p.Value)
+            nameBuilder.Property(a => a.Value)
                 .IsRequired()
                 .HasMaxLength(LengthConstants.Length150)
                 .HasColumnName("department_name");
+        
+            nameBuilder.HasIndex(a => a.Value)
+                .IsUnique()
+                .HasDatabaseName("IX_departments_name_unique");
         });
-
-        builder.ComplexProperty(c => c.Identifier, i =>
+        
+        // Identifier
+        builder.OwnsOne(l => l.Identifier, identifierBuilder =>
         {
-            i.Property(p => p.Value)
+            identifierBuilder.Property(a => a.Value)
                 .IsRequired()
                 .HasMaxLength(LengthConstants.Length150)
                 .HasColumnName("identifier");
+        
+            identifierBuilder.HasIndex(a => a.Value)
+                .IsUnique()
+                .HasDatabaseName("IX_departments_identifier_unique");
         });
         
+        // Path
         builder.ComplexProperty(c => c.Path, p =>
         {
             p.Property(v => v.Value)
                 .IsRequired()
-                .HasMaxLength(LengthConstants.Length150)
                 .HasColumnName("path");
         });
         
         builder.Property(x => x.ParentId).IsRequired(false).HasColumnName("parent_id");
         
-        builder.Property(x => x.Depth).IsRequired(false).HasColumnName("depth");
+        builder.Property(x => x.Depth).IsRequired().HasColumnName("depth");
         
         builder.Property(x => x.IsActive).IsRequired().HasColumnName("is_active");
         

@@ -1,5 +1,6 @@
 ﻿using DirectService.Domain.Departments;
 using DirectService.Domain.Locations;
+using DirectService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectService.Infrastructure.Database;
@@ -7,10 +8,14 @@ namespace DirectService.Infrastructure.Database;
 public class DirectServiceDbContext : DbContext
 {
     private readonly string _connectionString;
-
-    public DbSet<Department> Venues => Set<Department>();
-    
+   
     public DbSet<Location> Locations => Set<Location>();
+    
+    public DbSet<Department> Departments => Set<Department>();
+    
+    public DbSet<Position> Positions => Set<Position>();
+    
+    public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
     public DirectServiceDbContext(string connectionString)
     {
