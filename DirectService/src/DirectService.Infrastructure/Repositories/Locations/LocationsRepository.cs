@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Shared;
 
-namespace DirectService.Infrastructure.Locations;
+namespace DirectService.Infrastructure.Repositories.Locations;
 
 public class LocationsRepository : ILocationsRepository
 {
@@ -60,5 +60,17 @@ public class LocationsRepository : ILocationsRepository
             _logger.LogError(e, "Fail to insert Location : " + e.Message);
             return Error.Failure("location.add", "Fail to insert Location : " + e.Message);
         }
+    }
+
+    public async Task<Result<Location, Error>> GetById(Guid locationId, CancellationToken cancellationToken = default)
+    {
+        var location = await _dbContext.Locations
+            .Where(l => l.Id == locationId)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (location == null)
+            return Error.NotFound("value.not.found","Location is not found.");
+
+        return location;
     }
 }

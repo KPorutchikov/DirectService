@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectServiceDbContext))]
-    [Migration("20260410100111_Initial")]
+    [Migration("20260424073437_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -37,7 +37,7 @@ namespace DirectService.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<short?>("Depth")
+                    b.Property<short>("Depth")
                         .HasColumnType("smallint")
                         .HasColumnName("depth");
 
@@ -53,36 +53,13 @@ namespace DirectService.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.ComplexProperty<Dictionary<string, object>>("DepartmentName", "DirectService.Domain.Departments.Department.DepartmentName#DepartmentName", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("department_name");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("Identifier", "DirectService.Domain.Departments.Department.Identifier#Identifier", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("identifier");
-                        });
-
                     b.ComplexProperty<Dictionary<string, object>>("Path", "DirectService.Domain.Departments.Department.Path#Path", b1 =>
                         {
                             b1.IsRequired();
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
+                                .HasColumnType("text")
                                 .HasColumnName("path");
                         });
 
@@ -206,6 +183,61 @@ namespace DirectService.Infrastructure.Migrations
                         .HasName("id_positions");
 
                     b.ToTable("positions", (string)null);
+                });
+
+            modelBuilder.Entity("DirectService.Domain.Departments.Department", b =>
+                {
+                    b.OwnsOne("DirectService.Domain.Departments.DepartmentName", "DepartmentName", b1 =>
+                        {
+                            b1.Property<Guid>("DepartmentId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("department_name");
+
+                            b1.HasKey("DepartmentId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique()
+                                .HasDatabaseName("IX_departments_name_unique");
+
+                            b1.ToTable("departments");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DepartmentId");
+                        });
+
+                    b.OwnsOne("DirectService.Domain.Departments.Identifier", "Identifier", b1 =>
+                        {
+                            b1.Property<Guid>("DepartmentId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("identifier");
+
+                            b1.HasKey("DepartmentId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique()
+                                .HasDatabaseName("IX_departments_identifier_unique");
+
+                            b1.ToTable("departments");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DepartmentId");
+                        });
+
+                    b.Navigation("DepartmentName")
+                        .IsRequired();
+
+                    b.Navigation("Identifier")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DirectService.Domain.Departments.DepartmentLocation", b =>

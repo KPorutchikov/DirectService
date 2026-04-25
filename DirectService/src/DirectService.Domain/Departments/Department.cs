@@ -8,8 +8,8 @@ namespace DirectService.Domain.Departments;
 public class Department
 {
     private Department(
-        Guid id, Guid parentId, DepartmentName departmentName, Identifier identifier, Path path, short depth, 
-        IEnumerable<Guid> locations, IEnumerable<Guid> positions)
+        Guid id, Guid? parentId, DepartmentName departmentName, Identifier identifier, Path path, short depth, 
+        IEnumerable<Guid> locations)
     {
         Id = id;
         DepartmentName = departmentName;
@@ -25,10 +25,10 @@ public class Department
             .ToList();
         _locations = newLocations;
         
-        var newPositions = positions
-            .Select(l => new DepartmentPosition(Guid.NewGuid(),this,l))
-            .ToList();
-        _positions = newPositions;
+        // var newPositions = positions
+        //     .Select(l => new DepartmentPosition(Guid.NewGuid(),this,l))
+        //     .ToList();
+        // _positions = newPositions;
     }
     
     // EF Core
@@ -138,12 +138,12 @@ public class Department
     }
     
     public static Result<Department, Error> Create( 
-        Guid id, Guid parentId, DepartmentName departmentName, Identifier identifier, Path path, short depth, 
-        IEnumerable<Guid> locations, IEnumerable<Guid> positions)
+        Guid id, Guid? parentId, DepartmentName departmentName, Identifier identifier, Path path, short depth, 
+        IEnumerable<Guid> locations)
     {
         if (id == Guid.Empty) return GeneralErrors.ValueIsInvalid("DepartmentId");
         
-        return new Department( id, parentId, departmentName, identifier, path, depth, locations, positions);
+        return new Department( id, parentId, departmentName, identifier, path, depth, locations);
     }
 }
 
@@ -159,15 +159,15 @@ public record DepartmentName
     public static Result<DepartmentName, Error> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length < LengthConstants.Length3 || name.Length > LengthConstants.Length150) 
-            return GeneralErrors.ValueIsInvalid("DepartmentName");
-
+            return GeneralErrors.ValueIsInvalid("DepartmentName","Name must be between 3 and 150 characters");;
+        
         return new DepartmentName(name);  
     }
 }
 
 public record Path
 {
-    private const char Separator = '/';
+    private const char Separator = '.';
     public string Value { get; }
 
     private Path(string value)
@@ -198,10 +198,10 @@ public record Identifier
     public static Result<Identifier, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150) 
-            return GeneralErrors.ValueIsInvalid("Identifier");
+            return GeneralErrors.ValueIsInvalid("Identifier","Identifier must be between 3 and 150 characters");
 
         if (!value.All(c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
-            return GeneralErrors.ValueIsInvalid("Identifier");
+            return GeneralErrors.ValueIsInvalid("Identifier", "Identifier must contain only latinize letters");
         
         return new Identifier(value);
     }

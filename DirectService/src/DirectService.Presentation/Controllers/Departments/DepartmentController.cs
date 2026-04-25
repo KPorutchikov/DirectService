@@ -1,14 +1,22 @@
+using DirectService.Application.Departments;
+using DirectService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
+using Shared.EndpointResults;
 
 namespace DirectService.Presentation.Controllers.Departments;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/departments")]
 public class DepartmentController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> Test()
+    [HttpPost]
+    public async Task<EndpointResult<Guid>> CreateAsync(
+        [FromServices] CreateDepartmentHandler handler,
+        [FromBody] CreateDepartmentRequest request,
+        CancellationToken cancellationToken)
     {
-        return Ok(await Task.FromResult("Hello World!"));    
+        var command = new CreateDepartmentCommand(request);
+        
+        return await handler.Handle(command, cancellationToken);
     }
 }

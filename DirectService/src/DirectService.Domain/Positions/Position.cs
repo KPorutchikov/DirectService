@@ -5,7 +5,7 @@ namespace DirectService.Domain.Positions;
 
 public class Position
 {
-    private Position(Guid id, string name, string description)
+    private Position(Guid id, string name, string? description)
     {
         Id = id;
         Name = name;
@@ -51,16 +51,26 @@ public class Position
         return Result.Success<Position, Error>(this);
     }
     
-    public Result<Position, Error> Create(Guid id, string name, string? description)
+    public static Result<Position, Error> Create(Guid id, string name, string? description)
     {
-        if (id == Guid.Empty) return Error.Validation(null, "ID cannot be null or empty.", "Id");
-        
-        if (string.IsNullOrWhiteSpace(name) || name.Length < 3 || name.Length > 100) 
-            return Error.Validation(null, "Name must be between 3-100 characters.", "Name");
-        
-        if (!string.IsNullOrWhiteSpace(description) && description.Length > 1000) 
-            return Error.Validation(null, "Description must be less 1000 characters.", "Description");
+        if (id == Guid.Empty) return GeneralErrors.ValueIsInvalid("PositionId");
 
-        return new Position(id, name, description!);
+        return new Position(id, CreateName(name).Value, CreateDescription(description).Value);
+    }
+
+    public static Result<string, Error> CreateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name.Length < 3 || name.Length > 100) 
+            return Error.Validation("PositionName", "Name must be between 3-100 characters.", "Name");
+        
+        return name;
+    }
+
+    public static Result<string?, Error> CreateDescription(string? description)
+    {
+        if (string.IsNullOrWhiteSpace(description) || description.Length > 1000) 
+            return Error.Validation("PositionDescription", "Description must be null or less 1000 characters.", "Description");
+        
+        return description!;
     }
 }

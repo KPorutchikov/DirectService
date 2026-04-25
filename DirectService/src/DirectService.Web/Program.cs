@@ -1,9 +1,13 @@
 using System.Globalization;
 using DirectService.Application;
+using DirectService.Application.Departments;
 using DirectService.Application.Locations;
+using DirectService.Application.Positions;
 using DirectService.Infrastructure;
 using DirectService.Infrastructure.Database;
-using DirectService.Infrastructure.Locations;
+using DirectService.Infrastructure.Repositories.Departments;
+using DirectService.Infrastructure.Repositories.Locations;
+using DirectService.Infrastructure.Repositories.Positions;
 using DirectService.Presentation;
 using DirectService.Web.Middlewares;
 using Microsoft.OpenApi.Models;
@@ -60,7 +64,8 @@ try
         new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
 
     builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
-    builder.Services.AddScoped<CreateLocationHandler>();
+    builder.Services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
+    builder.Services.AddScoped<IPositionRepository, PositionsRepository>();
 
     var app = builder.Build();
 
