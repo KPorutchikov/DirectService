@@ -10,4 +10,9 @@ public interface IDepartmentRepository
 
     public Task<Result<Department, Error>> GetById(Guid departmentId, CancellationToken cancellationToken = default);
 
+    public Task<Result<Department, Error>> GetByIdWithLocations(Guid departmentId, CancellationToken cancellationToken = default);
+
+    public Task<Result<int, Error>> AddLocationsSql(Guid departmentId, IEnumerable<DepartmentLocation> departmentLocations, CancellationToken cancellationToken = default);
+
+    public Task<Result<int, Error>> DeleteLocationsSql(Guid departmentId, IEnumerable<Guid> locationsIds, CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text;
+using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
 using DirectService.Domain.Departments;
 using DirectService.Infrastructure.Database;
@@ -70,5 +71,54 @@ public class DepartmentsRepository: IDepartmentRepository
             return Error.NotFound("value.not.found","Department is not found.");
 
         return department;
+    }
+    
+    public async Task<Result<Department, Error>> GetByIdWithLocations(Guid departmentId, CancellationToken cancellationToken = default)
+    {
+        var department = await _dbContext.Departments
+            .Include(d => d.Locations)
+            .Where(d => d.Id == departmentId && d.IsActive == true)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (department == null)
+            return Error.NotFound("value.not.found","Department is not found.");
+
+        return department;
+    }
+
+    public async Task<Result<int, Error>> AddLocationsSql(Guid departmentId, IEnumerable<DepartmentLocation> departmentLocations, CancellationToken cancellationToken = default)
+    {
+        var sql = new StringBuilder("INSERT INTO department_locations (id, department_id, location_id, created_at) VALUES ");
+      
+        sql.Append(string.Join(",", departmentLocations.Select(l => $"('{l.Id}','{l.Department.Id}','{l.LocationId}','{l.CreatedAt}')")) + ";");
+        
+        try
+        {
+            var rowsAffected = await _dbContext.Database.ExecuteSqlRawAsync(sql.ToString(),cancellationToken);
+            
+            return rowsAffected;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", e.Message);
+        }
+    }
+
+    public async Task<Result<int, Error>> DeleteLocationsSql(Guid departmentId, IEnumerable<Guid> locationsIds, CancellationToken cancellationToken = default)
+    {
+        var sql = new StringBuilder($"DELETE FROM department_locations WHERE department_id = '{departmentId}' AND location_id IN ");
+      
+        sql.Append("(" + string.Join(",", locationsIds.Select(x => $"'{x}'")) + ");");
+        
+        try
+        {
+            var rowsAffected = await _dbContext.Database.ExecuteSqlRawAsync(sql.ToString(),cancellationToken);
+            
+            return rowsAffected;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", e.Message);
+        }
     }
 }

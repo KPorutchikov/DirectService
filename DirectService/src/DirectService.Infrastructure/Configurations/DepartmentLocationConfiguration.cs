@@ -10,7 +10,7 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
     public void Configure(EntityTypeBuilder<DepartmentLocation> builder)
     {
         builder.ToTable("department_locations");
-
+        
         builder.HasKey(x => x.Id).HasName("id_department_locations");
         
         builder.Property(x => x.Id).HasColumnName("id");
