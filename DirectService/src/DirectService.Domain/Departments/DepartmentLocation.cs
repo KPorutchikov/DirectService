@@ -1,8 +1,11 @@
-﻿namespace DirectService.Domain.Departments;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectService.Domain.Departments;
 
 public class DepartmentLocation
 {
-    public DepartmentLocation(Guid id, Department department, Guid locationId )
+    private DepartmentLocation(Guid id, Department department, Guid locationId )
     {
         Id = id;
         Department = department;
@@ -12,8 +15,13 @@ public class DepartmentLocation
 
     // EF Core
     private DepartmentLocation() { }
-    public Guid Id { get; }
-    public Department Department { get; set; }
-    public Guid LocationId { get; set; }
+    public Guid Id { get; private set;}
+    public Department Department { get; private set;}
+    public Guid LocationId { get; private set;}
     public DateTime CreatedAt { get; }
+
+    public static Result<DepartmentLocation, Error> Create(Department department, Guid locationId)
+    {
+        return new DepartmentLocation(Guid.NewGuid(), department, locationId);
+    }
 }

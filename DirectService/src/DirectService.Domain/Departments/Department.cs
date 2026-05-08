@@ -21,7 +21,7 @@ public class Department
         CreatedAt = DateTime.UtcNow;
         
         var newLocations = locations
-            .Select(l => new DepartmentLocation(Guid.NewGuid(),this,l))
+            .Select(l => DepartmentLocation.Create(this, l).Value)
             .ToList();
         _locations = newLocations;
         
@@ -99,21 +99,21 @@ public class Department
         return Error.NotFound(null, $"Position with id: {position.Id} does not exist.", null);
     }
     
-    public void SetLocations(IEnumerable<Guid> locations)
+    public void SetLocations(IEnumerable<DepartmentLocation> locations)
     {
-        var newLocations = locations.Select(l => new DepartmentLocation(Guid.NewGuid(),this, l)).ToList();
-        foreach (var location in newLocations)
+        //var newLocations = locations.Select(l => DepartmentLocation.Create(this, l).Value).ToList();
+        foreach (var location in locations)
         {
             _locations.Add(location);
         }
     }
 
-    public Result<Guid, Error> DeleteLocations(Location location)
+    public Result<Guid, Error> DeleteLocations(Guid locationId)
     {
         if (_locations != null)
             foreach (var currentLocation in _locations)
             {
-                if (currentLocation.LocationId == location.Id)
+                if (currentLocation.LocationId == locationId)
                 {
                     _locations.Remove(currentLocation);
 
@@ -121,7 +121,7 @@ public class Department
                 }
             }
         
-        return Error.NotFound(null, $"Location with id: {location.Id} does not exist.", null);
+        return Error.NotFound(null, $"Location with id: {locationId} does not exist.", null);
     }
 
     public Result<Department, Error> Update(DepartmentName departmentName, Identifier identifier, Guid parentId, Path path, short depth, bool isActive)

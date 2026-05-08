@@ -1,5 +1,6 @@
 using System.Globalization;
 using DirectService.Application;
+using DirectService.Application.Database;
 using DirectService.Application.Departments;
 using DirectService.Application.Locations;
 using DirectService.Application.Positions;
@@ -62,6 +63,8 @@ try
 
     builder.Services.AddScoped<DirectServiceDbContext>(_ => 
         new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
+    
+    builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 
     builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
     builder.Services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
