@@ -2,9 +2,9 @@
 
 namespace DirectService.Application.Departments.UpdateLocations;
 
-public class CreateDepartmentLocationsValidator : AbstractValidator<UpdateDepartmentLocationsCommand>
+public class UpdateDepartmentLocationsValidator : AbstractValidator<UpdateDepartmentLocationsCommand>
 {
-    public CreateDepartmentLocationsValidator()
+    public UpdateDepartmentLocationsValidator()
     {
         RuleFor(x => x.Request.OldLocationIds)
             .NotEmpty().WithMessage("Old location is not be empty.").WithErrorCode("location.is.empty");

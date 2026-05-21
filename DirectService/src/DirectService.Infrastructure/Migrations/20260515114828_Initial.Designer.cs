@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectService.Infrastructure.Migrations
 {
     [DbContext(typeof(DirectServiceDbContext))]
-    [Migration("20260502113640_AddIndex_Department_Locations")]
-    partial class AddIndex_Department_Locations
+    [Migration("20260515114828_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,7 @@ namespace DirectService.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DirectService.Domain.Departments.Department", b =>
@@ -59,12 +60,14 @@ namespace DirectService.Infrastructure.Migrations
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("text")
+                                .HasColumnType("ltree")
                                 .HasColumnName("path");
                         });
 
                     b.HasKey("Id")
                         .HasName("id_departments");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("departments", (string)null);
                 });
@@ -187,6 +190,11 @@ namespace DirectService.Infrastructure.Migrations
 
             modelBuilder.Entity("DirectService.Domain.Departments.Department", b =>
                 {
+                    b.HasOne("DirectService.Domain.Departments.Department", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.OwnsOne("DirectService.Domain.Departments.DepartmentName", "DepartmentName", b1 =>
                         {
                             b1.Property<Guid>("DepartmentId")
@@ -238,6 +246,8 @@ namespace DirectService.Infrastructure.Migrations
 
                     b.Navigation("Identifier")
                         .IsRequired();
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("DirectService.Domain.Departments.DepartmentLocation", b =>

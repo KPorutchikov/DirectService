@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
 using DirectService.Domain.Departments;
@@ -6,7 +7,9 @@ using DirectService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using NpgsqlTypes;
 using Shared;
+using Shared.DTO;
 
 namespace DirectService.Infrastructure.Repositories.Departments;
 
@@ -100,7 +103,7 @@ public class DepartmentsRepository: IDepartmentRepository
         }
         catch (Exception e)
         {
-            return Error.Failure("database", e.Message);
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
         }
     }
 
@@ -118,7 +121,91 @@ public class DepartmentsRepository: IDepartmentRepository
         }
         catch (Exception e)
         {
-            return Error.Failure("database", e.Message);
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
+        }
+    }
+   
+    public async Task<Result<Guid, Error>> SetLockDepartmentLocationSql(Guid departmentId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            /* _dbContext.Database.ExecuteSqlAsync($"SELECT department_id FROM department_locations WHERE department_id = {departmentId} FOR UPDATE", cancellationToken); */
+
+            var departmentLocationResult = await _dbContext.Departments
+                .FromSql($"SELECT * FROM department_locations WHERE department_id = {departmentId} FOR UPDATE")
+                .Include(d => d.Locations)
+                .FirstOrDefaultAsync(cancellationToken);
+            
+            if (departmentLocationResult == null) return GeneralErrors.NotFound(departmentId, "department_location");
+
+            return departmentId;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
+        }
+    }
+
+    public async Task<Result<List<DepartmentsLockDto>, Error>> SetLockDepartmentTree(Guid departmentId, Guid? newParentId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var departments = await _dbContext.Database.SqlQuery<DepartmentsLockDto>($@"
+                SELECT id AS Id, parent_id AS ParentId, identifier AS Identifier, path AS Path 
+                FROM departments 
+                WHERE path <@ (SELECT path FROM departments WHERE id = {departmentId} AND is_active = true)
+                   OR (id = {newParentId} AND is_active = true)
+                FOR UPDATE")
+                .ToListAsync(cancellationToken);
+            
+            if (departments.Count == 0)
+                return GeneralErrors.NotFound(departmentId);
+
+            return departments;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
+        }
+    }
+    
+    public async Task<Result<int, Error>> UpdateDepartmentPathTree(string rootPath, Guid? newParentId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var rootPathParam    = new NpgsqlParameter("rootPath", NpgsqlDbType.LTree) { Value = rootPath };
+            var newParentIdParam = new NpgsqlParameter("newParentId", NpgsqlDbType.Uuid) { Value = (object?)newParentId ?? DBNull.Value };
+            
+            const string sql = @"
+            WITH cte_departments AS (
+            SELECT
+	            d.id,
+	            CASE WHEN d.path = @rootPath::ltree THEN n.id ELSE d.parent_id END AS NewParentId,
+	            COALESCE(n.path,'') || subpath(d.path, index(d.path, text2ltree(r.identifier)), nlevel(d.path)) as NewPath
+            FROM departments d
+            LEFT JOIN departments r ON r.path = @rootPath::ltree
+            LEFT JOIN departments o ON o.id = r.parent_id
+            LEFT JOIN departments n ON n.id = @newParentId
+            WHERE d.path <@ @rootPath::ltree)
+
+            UPDATE departments d
+            SET parent_id  = n.NewParentId,
+	            path       = n.NewPath,
+	            depth      = nlevel(n.NewPath)-1,
+	            updated_at = CURRENT_TIMESTAMP
+            FROM cte_departments n 
+            WHERE n.id = d.id";
+            
+            int rowsAffected = await _dbContext.Database.ExecuteSqlRawAsync(sql, new object[] {rootPathParam, newParentIdParam}, cancellationToken);
+
+            if (rowsAffected == 0)
+                return GeneralErrors.Failure(rootPath);
+            
+            return rowsAffected;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
         }
     }
 }
