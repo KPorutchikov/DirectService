@@ -32,5 +32,9 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
         builder.Property(x => x.LocationId).HasColumnName("location_id");
         
         builder.Property(x => x.CreatedAt).IsRequired().HasColumnName("created_at");
+        
+        // builder.HasIndex("department_id", "location_id")
+        //     .HasDatabaseName("IX_department_locations_department_id_location_id")
+        //     .IsUnique();
     }
 }

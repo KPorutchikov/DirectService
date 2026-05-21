@@ -11,6 +11,9 @@ namespace DirectService.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:ltree", ",,");
+
             migrationBuilder.CreateTable(
                 name: "departments",
                 columns: table => new
@@ -23,11 +26,17 @@ namespace DirectService.Infrastructure.Migrations
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    path = table.Column<string>(type: "text", nullable: false)
+                    path = table.Column<string>(type: "ltree", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("id_departments", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_departments_departments_parent_id",
+                        column: x => x.parent_id,
+                        principalTable: "departments",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -146,6 +155,11 @@ namespace DirectService.Infrastructure.Migrations
                 table: "departments",
                 column: "department_name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_departments_parent_id",
+                table: "departments",
+                column: "parent_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_locations_address_unique",

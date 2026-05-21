@@ -2,6 +2,7 @@
 using DirectService.Domain.Departments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Path = DirectService.Domain.Departments.Path;
 
 namespace DirectService.Infrastructure.Configurations;
 
@@ -42,13 +43,22 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         });
         
         // Path
-        builder.ComplexProperty(c => c.Path, p =>
-        {
-            p.Property(v => v.Value)
-                .IsRequired()
-                .HasColumnName("path");
-        });
-        
+        builder.Property(p => p.Path)
+            .HasColumnName("path")
+            .HasColumnType("ltree")
+            .IsRequired()
+            .HasConversion(
+                v => v.Value,
+                v => Path.Create(v));
+            
+        // builder.ComplexProperty(c => c.Path, p =>
+        // {
+        //     p.Property(v => v.Value)
+        //         .IsRequired()
+        //         .HasColumnName("path")
+        //         .HasColumnType("ltree");
+        // });
+       
         builder.Property(x => x.ParentId).IsRequired(false).HasColumnName("parent_id");
         
         builder.Property(x => x.Depth).IsRequired().HasColumnName("depth");
@@ -58,5 +68,12 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(x => x.CreatedAt).IsRequired().HasColumnName("created_at");
         
         builder.Property(x => x.UpdatedAt).IsRequired(false).HasColumnName("updated_at");
+        
+        builder.HasMany<Department>()
+            .WithOne(d => d.Parent)
+            .IsRequired(false)
+            .HasForeignKey(d => d.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
     }
 }

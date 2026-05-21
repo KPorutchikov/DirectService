@@ -50,7 +50,10 @@ public class Department
     
     public Guid? ParentId { get; private set; }
     
+    public Department? Parent { get; private set; }
+    
     public Path Path { get; private set; } = null!;
+    //public string Path { get; private set; } = null!;
     
     public short? Depth { get; private set; }
     
@@ -175,14 +178,14 @@ public record Path
         Value = value;
     }
 
-    public static Path CreateParent(Identifier identifier)
+    public static Path Create(string value)
     {
-        return new Path(identifier.Value);
+        return new Path(value);
     }
 
-    public Path CreateChild(Identifier childIdentifier)
+    public Path CreateChild(string childIdentifier)
     {
-        return new Path(Value + Separator + childIdentifier.Value);
+        return new Path(Value + Separator + childIdentifier);
     }
 }
 

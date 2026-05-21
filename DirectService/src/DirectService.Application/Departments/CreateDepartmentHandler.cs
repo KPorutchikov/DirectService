@@ -45,7 +45,7 @@ public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCom
         var departmentId = Guid.NewGuid();
 
         var identifier = Identifier.Create(request.Identifier).Value;
-        var path = Path.CreateParent(identifier);
+        var path = Path.Create(identifier.Value);
         short depth = 0;
         Guid? parentId = null;
         
@@ -56,7 +56,7 @@ public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCom
                 return parentDepartment.Error.ToErrors();
 
             parentId = parentDepartment.Value.Id;
-            path = parentDepartment.Value.Path.CreateChild(identifier);
+            path = parentDepartment.Value.Path.CreateChild(identifier.Value);
             depth = (short)(parentDepartment.Value.Depth!.Value + 1);
         }
 
