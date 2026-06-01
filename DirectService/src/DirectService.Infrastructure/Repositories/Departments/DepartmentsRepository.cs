@@ -93,7 +93,7 @@ public class DepartmentsRepository: IDepartmentRepository
     {
         var sql = new StringBuilder("INSERT INTO department_locations (id, department_id, location_id, created_at) VALUES ");
       
-        sql.Append(string.Join(",", departmentLocations.Select(l => $"('{l.Id}','{l.Department.Id}','{l.LocationId}','{l.CreatedAt}')")) + ";");
+        sql.Append(string.Join(",", departmentLocations.Select(l => $"('{l.Id}','{l.Department.Id}','{l.LocationId}', CURRENT_TIMESTAMP)")) + ";");
         
         try
         {
@@ -131,9 +131,8 @@ public class DepartmentsRepository: IDepartmentRepository
         {
             /* _dbContext.Database.ExecuteSqlAsync($"SELECT department_id FROM department_locations WHERE department_id = {departmentId} FOR UPDATE", cancellationToken); */
 
-            var departmentLocationResult = await _dbContext.Departments
+            var departmentLocationResult = await _dbContext.DepartmentLocations
                 .FromSql($"SELECT * FROM department_locations WHERE department_id = {departmentId} FOR UPDATE")
-                .Include(d => d.Locations)
                 .FirstOrDefaultAsync(cancellationToken);
             
             if (departmentLocationResult == null) return GeneralErrors.NotFound(departmentId, "department_location");

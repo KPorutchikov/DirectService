@@ -16,6 +16,8 @@ public class DirectServiceDbContext : DbContext
     public DbSet<Position> Positions => Set<Position>();
     
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
+    
+    public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
 
     public DirectServiceDbContext(string connectionString)
     {
