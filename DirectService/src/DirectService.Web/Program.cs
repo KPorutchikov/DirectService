@@ -94,6 +94,9 @@ finally
 }
 
 
-
+namespace DirectService.Web
+{
+    public partial class Program;
+}
 
 
