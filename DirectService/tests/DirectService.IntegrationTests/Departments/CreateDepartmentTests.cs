@@ -1,4 +1,5 @@
 using DirectService.Application.Departments;
+using DirectService.Application.Departments.Commands.Create;
 using DirectService.Contracts.Departments;
 using DirectService.Domain.Locations;
 using DirectService.IntegrationTests.Infrastructure;

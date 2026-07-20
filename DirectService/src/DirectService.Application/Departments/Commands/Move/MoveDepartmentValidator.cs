@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace DirectService.Application.Departments.Move;
+namespace DirectService.Application.Departments.Commands.Move;
 
 public class MoveDepartmentValidator : AbstractValidator<MoveDepartmentCommand>
 {

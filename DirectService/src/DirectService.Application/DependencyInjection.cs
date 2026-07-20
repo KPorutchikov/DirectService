@@ -1,5 +1,6 @@
 ﻿using DirectService.Application.Departments;
 using DirectService.Application.Locations;
+using DirectService.Application.Locations.Queries;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Abstractions;
@@ -12,7 +13,7 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);;
         
-        // services.AddScoped<CreateLocationHandler>();
+        services.AddScoped<GetLocationByIdHandler>();
         // services.AddScoped<CreateDepartmentHandler>();
         
 

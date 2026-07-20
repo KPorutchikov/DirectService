@@ -2,8 +2,12 @@ using System.Globalization;
 using DirectService.Application;
 using DirectService.Application.Database;
 using DirectService.Application.Departments;
+using DirectService.Application.Departments.Commands;
+using DirectService.Application.Departments.Queries;
 using DirectService.Application.Locations;
-using DirectService.Application.Positions;
+using DirectService.Application.Locations.Command;
+using DirectService.Application.Locations.Command.Positions;
+using DirectService.Application.Locations.Queries;
 using DirectService.Infrastructure;
 using DirectService.Infrastructure.Database;
 using DirectService.Infrastructure.Repositories.Departments;
@@ -12,6 +16,7 @@ using DirectService.Infrastructure.Repositories.Positions;
 using DirectService.Presentation;
 using DirectService.Web.Middlewares;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -63,12 +68,18 @@ try
 
     builder.Services.AddScoped<DirectServiceDbContext>(_ => 
         new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
+
+    builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+    Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     
     builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 
     builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
     builder.Services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
     builder.Services.AddScoped<IPositionRepository, PositionsRepository>();
+    builder.Services.AddScoped<GetDepartmentByIdHandler>();
+    builder.Services.AddScoped<GetLocationByIdHandler>();
+    
 
     var app = builder.Build();
 

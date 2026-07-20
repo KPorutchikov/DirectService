@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using CSharpFunctionalExtensions;
-using DirectService.Application.Locations;
+using DirectService.Application.Locations.Command;
 using DirectService.Domain.Departments;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using Shared;
 using Shared.Abstractions;
 using Path = DirectService.Domain.Departments.Path;
 
-namespace DirectService.Application.Departments;
+namespace DirectService.Application.Departments.Commands.Create;
 
 public class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentCommand>
 {

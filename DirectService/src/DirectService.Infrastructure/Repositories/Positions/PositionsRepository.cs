@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectService.Application.Positions;
+using DirectService.Application.Locations.Command.Positions;
 using DirectService.Domain.Departments;
 using DirectService.Domain.Positions;
 using DirectService.Infrastructure.Database;

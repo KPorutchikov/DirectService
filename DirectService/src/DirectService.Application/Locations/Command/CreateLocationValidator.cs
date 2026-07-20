@@ -1,9 +1,8 @@
 ﻿using DirectService.Application.Validation;
-using DirectService.Contracts.Locations;
 using DirectService.Domain.Locations;
 using FluentValidation;
 
-namespace DirectService.Application.Locations;
+namespace DirectService.Application.Locations.Command;
 
 public class CreateLocationValidator : AbstractValidator<CreateLocationCommand>
 {

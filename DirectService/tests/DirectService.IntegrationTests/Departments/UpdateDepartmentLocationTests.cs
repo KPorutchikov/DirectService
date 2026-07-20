@@ -1,5 +1,4 @@
-﻿
-using DirectService.Application.Departments.UpdateLocations;
+﻿using DirectService.Application.Departments.Commands.UpdateLocations;
 using DirectService.Contracts.Departments;
 using DirectService.Domain.Departments;
 using DirectService.Domain.Locations;

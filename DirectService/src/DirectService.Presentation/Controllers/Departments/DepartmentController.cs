@@ -1,8 +1,11 @@
 using DirectService.Application.Departments;
-using DirectService.Application.Departments.Move;
-using DirectService.Application.Departments.UpdateLocations;
+using DirectService.Application.Departments.Commands.Create;
+using DirectService.Application.Departments.Commands.Move;
+using DirectService.Application.Departments.Commands.UpdateLocations;
+using DirectService.Application.Departments.Queries;
 using DirectService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
+using Shared.DTO;
 using Shared.EndpointResults;
 
 namespace DirectService.Presentation.Controllers.Departments;
@@ -11,6 +14,16 @@ namespace DirectService.Presentation.Controllers.Departments;
 [Route("/api/departments")]
 public class DepartmentController : ControllerBase
 {
+    [HttpGet("{departmentId:guid}")]
+    public async Task<EndpointResult<GetDepartmentDto?>> GetById(
+        [FromRoute] Guid departmentId,
+        [FromServices] GetDepartmentByIdHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(departmentId, cancellationToken);
+    }
+    
+    
     [HttpPost]
     public async Task<EndpointResult<Guid>> CreateAsync(
         [FromServices] CreateDepartmentHandler handler,
