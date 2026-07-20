@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
 using CSharpFunctionalExtensions;
 using DirectService.Application.Database;
-using DirectService.Application.Locations;
+using DirectService.Application.Locations.Command;
 using DirectService.Domain.Departments;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
 
-namespace DirectService.Application.Departments.UpdateLocations;
+namespace DirectService.Application.Departments.Commands.UpdateLocations;
 
 public class UpdateDepartmentLocationsHandler: ICommandHandler<Guid, UpdateDepartmentLocationsCommand>
 {

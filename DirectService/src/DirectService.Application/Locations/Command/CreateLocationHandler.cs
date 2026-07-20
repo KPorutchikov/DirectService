@@ -1,14 +1,13 @@
-﻿using CSharpFunctionalExtensions;
-using DirectService.Contracts.Locations;
+﻿using System.Text.Json;
+using CSharpFunctionalExtensions;
 using DirectService.Domain.Locations;
 using FluentValidation;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
 using TimeZone = DirectService.Domain.Locations.TimeZone;
 
-namespace DirectService.Application.Locations;
+namespace DirectService.Application.Locations.Command;
 
 public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
 {

@@ -1,4 +1,4 @@
-﻿using DirectService.Application.Positions;
+﻿using DirectService.Application.Locations.Command.Positions;
 using DirectService.Contracts.Positions;
 using Microsoft.AspNetCore.Mvc;
 using Shared.EndpointResults;

@@ -2,7 +2,7 @@
 using DirectService.Domain.Locations;
 using Shared;
 
-namespace DirectService.Application.Locations;
+namespace DirectService.Application.Locations.Command;
 
 public interface ILocationsRepository
 {

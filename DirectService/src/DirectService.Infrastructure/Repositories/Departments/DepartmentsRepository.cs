@@ -2,6 +2,7 @@
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
+using DirectService.Application.Departments.Commands;
 using DirectService.Domain.Departments;
 using DirectService.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;

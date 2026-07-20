@@ -1,9 +1,8 @@
 ﻿using DirectService.Application.Validation;
-using DirectService.Contracts.Positions;
 using DirectService.Domain.Positions;
 using FluentValidation;
 
-namespace DirectService.Application.Positions;
+namespace DirectService.Application.Locations.Command.Positions;
 
 public class CreatePositionValidator : AbstractValidator<CreatePositionCommand>
 {

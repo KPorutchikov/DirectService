@@ -3,7 +3,7 @@ using DirectService.Domain.Departments;
 using DirectService.Domain.Positions;
 using Shared;
 
-namespace DirectService.Application.Positions;
+namespace DirectService.Application.Locations.Command.Positions;
 
 public interface IPositionRepository
 {

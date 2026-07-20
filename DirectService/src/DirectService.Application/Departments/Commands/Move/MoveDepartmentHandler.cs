@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
 
-namespace DirectService.Application.Departments.Move;
+namespace DirectService.Application.Departments.Commands.Move;
 
 public class MoveDepartmentHandler: ICommandHandler<Guid, MoveDepartmentCommand>
 {

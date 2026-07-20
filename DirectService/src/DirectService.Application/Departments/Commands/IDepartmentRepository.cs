@@ -3,7 +3,7 @@ using DirectService.Domain.Departments;
 using Shared;
 using Shared.DTO;
 
-namespace DirectService.Application.Departments;
+namespace DirectService.Application.Departments.Commands;
 
 public interface IDepartmentRepository
 {

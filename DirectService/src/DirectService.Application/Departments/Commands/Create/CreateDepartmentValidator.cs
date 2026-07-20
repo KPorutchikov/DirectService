@@ -1,9 +1,8 @@
 ﻿using DirectService.Application.Validation;
 using DirectService.Domain.Departments;
-using DirectService.Domain.Locations;
 using FluentValidation;
 
-namespace DirectService.Application.Departments;
+namespace DirectService.Application.Departments.Commands.Create;
 
 public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentCommand>
 {

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
-using DirectService.Application.Departments.Move;
+using DirectService.Application.Departments.Commands.Create;
+using DirectService.Application.Departments.Commands.Move;
 using DirectService.Contracts.Departments;
 using DirectService.Domain.Locations;
 using DirectService.IntegrationTests.Infrastructure;
