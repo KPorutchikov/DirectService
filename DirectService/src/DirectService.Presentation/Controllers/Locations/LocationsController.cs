@@ -14,6 +14,15 @@ namespace DirectService.Presentation.Controllers.Locations;
 [Route("/api/locations")]
 public class LocationsController : ControllerBase
 {
+    
+    [HttpGet("/top")]
+    public async Task<EndpointResult<GetLocationTopDto[]?>> GetTop(
+        [FromServices] GetLocationsTopHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(cancellationToken);
+    }
+    
     [HttpGet("{locationId:guid}")]
     public async Task<EndpointResult<GetLocationDto?>> GetById(
         [FromRoute] Guid locationId,
