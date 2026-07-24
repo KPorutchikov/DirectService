@@ -79,6 +79,7 @@ try
     builder.Services.AddScoped<IPositionRepository, PositionsRepository>();
     builder.Services.AddScoped<GetDepartmentByIdHandler>();
     builder.Services.AddScoped<GetLocationByIdHandler>();
+    builder.Services.AddScoped<GetLocationsTopHandler>();
     
 
     var app = builder.Build();
