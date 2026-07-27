@@ -1,3 +1,4 @@
+using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
 using DirectService.Application.Departments.Commands.Create;
 using DirectService.Application.Departments.Commands.Move;
@@ -5,6 +6,7 @@ using DirectService.Application.Departments.Commands.UpdateLocations;
 using DirectService.Application.Departments.Queries;
 using DirectService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using Shared.DTO;
 using Shared.EndpointResults;
 
@@ -21,6 +23,15 @@ public class DepartmentController : ControllerBase
         CancellationToken cancellationToken)
     {
         return await handler.Handle(departmentId, cancellationToken);
+    }
+    
+    [HttpGet("")]
+    public async Task<EndpointResult<PagedList<GetDepartmentFilterDto?>>> GetByFilter(
+        [FromServices] GetDepartmentByFilterHandler handler,
+        [FromQuery] GetDepartmentRequest request,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(request, cancellationToken);
     }
     
     
