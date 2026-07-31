@@ -2,6 +2,7 @@
 using DirectService.Application.Locations;
 using DirectService.Application.Locations.Command;
 using DirectService.Application.Locations.Queries;
+using DirectService.Contracts.Departments;
 using DirectService.Contracts.Locations;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -30,6 +31,15 @@ public class LocationsController : ControllerBase
         CancellationToken cancellationToken)
     {
         return await handler.Handle(locationId, cancellationToken);
+    }
+
+    [HttpGet("")]
+    public async Task<EndpointResult<PagedList<GetLocationFilterDto?>>> GetByFilter(
+        [FromQuery] GetLocationFilterRequest request,
+        [FromServices] GetLocationsByFilterHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(request, cancellationToken);
     }
     
     [HttpPost]
