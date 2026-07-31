@@ -81,6 +81,7 @@ try
     builder.Services.AddScoped<GetLocationByIdHandler>();
     builder.Services.AddScoped<GetLocationsTopHandler>();
     builder.Services.AddScoped<GetDepartmentByFilterHandler>();
+    builder.Services.AddScoped<GetLocationsByFilterHandler>();
     
 
     var app = builder.Build();
