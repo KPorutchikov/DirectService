@@ -1,4 +1,5 @@
-﻿using DirectService.Application.Locations.Command.Positions;
+﻿using DirectService.Application.Positions.Command.Create;
+using DirectService.Application.Positions.Command.Delete;
 using DirectService.Contracts.Positions;
 using Microsoft.AspNetCore.Mvc;
 using Shared.EndpointResults;
@@ -19,5 +20,14 @@ public class PositionController : ControllerBase
         var command = new CreatePositionCommand(request);
         
         return await handler.Handle(command, cancellationToken);
+    }
+    
+    [HttpDelete("{positionId:guid}")]
+    public async Task<EndpointResult<Guid>> SoftDelete(
+        [FromRoute] Guid positionId,
+        [FromServices] SoftDeletePositionHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(positionId, cancellationToken);
     }
 }

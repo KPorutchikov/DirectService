@@ -1,6 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectService.Application.Locations;
 using DirectService.Application.Locations.Command;
+using DirectService.Application.Locations.Command.Create;
+using DirectService.Application.Locations.Command.Delete;
 using DirectService.Application.Locations.Queries;
 using DirectService.Contracts.Departments;
 using DirectService.Contracts.Locations;
@@ -51,5 +53,14 @@ public class LocationsController : ControllerBase
         var command = new CreateLocationCommand(location);
         
         return await handler.Handle(command, cancellationToken);
+    }
+    
+    [HttpDelete("{locationId:guid}")]
+    public async Task<EndpointResult<Guid>> SoftDelete(
+        [FromRoute] Guid locationId,
+        [FromServices] SoftDeleteLocationHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(locationId, cancellationToken);
     }
 }

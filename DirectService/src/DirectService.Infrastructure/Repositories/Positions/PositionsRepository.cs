@@ -1,5 +1,6 @@
-﻿using CSharpFunctionalExtensions;
-using DirectService.Application.Locations.Command.Positions;
+﻿using System.Text.Json;
+using CSharpFunctionalExtensions;
+using DirectService.Application.Positions.Command;
 using DirectService.Domain.Departments;
 using DirectService.Domain.Positions;
 using DirectService.Infrastructure.Database;
@@ -13,9 +14,9 @@ namespace DirectService.Infrastructure.Repositories.Positions;
 public class PositionsRepository : IPositionRepository
 {
     private readonly DirectServiceDbContext _dbContext;
-    private readonly ILogger<DepartmentsRepository> _logger;
+    private readonly ILogger<PositionsRepository> _logger;
 
-    public PositionsRepository(DirectServiceDbContext dbContext, ILogger<DepartmentsRepository> logger)
+    public PositionsRepository(DirectServiceDbContext dbContext, ILogger<PositionsRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
@@ -49,6 +50,18 @@ public class PositionsRepository : IPositionRepository
             
         return result;
     }
+    
+    public async Task<Result<Position?, Error>> GetById(Guid positionId, CancellationToken cancellationToken = default)
+    {
+        var position = await _dbContext.Positions
+            .Where(p => p.Id == positionId)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (position == null)
+            return Error.NotFound("value.not.found","Position is not found.");
+
+        return position;
+    }
 
     public async Task<Result<Guid, Error>> AddPositionToDepartment(Guid positionId, IEnumerable<Department> departments, CancellationToken cancellationToken = default)
     {
@@ -72,6 +85,24 @@ public class PositionsRepository : IPositionRepository
         {
             _logger.LogError(e, "Fail to insert DepartmentPosition : " + e.Message);
             return Error.Failure("departmentposition.add", "Fail to insert DepartmentPosition : " + e.Message);
+        }
+    }
+    
+    public async Task<Result<Guid, Error>> SetLockPositionSql(Guid positionId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _dbContext.Positions
+                .FromSql($"SELECT * FROM positions WHERE is_active = true AND id = {positionId} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+            
+            if (result == null) return GeneralErrors.NotFound(positionId, "position");
+
+            return positionId;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
         }
     }
 }

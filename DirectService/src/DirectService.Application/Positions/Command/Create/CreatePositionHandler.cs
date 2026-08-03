@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using CSharpFunctionalExtensions;
-using DirectService.Application.Departments;
 using DirectService.Application.Departments.Commands;
 using DirectService.Domain.Departments;
 using DirectService.Domain.Positions;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
 
-namespace DirectService.Application.Locations.Command.Positions;
+namespace DirectService.Application.Positions.Command.Create;
 
 public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand>
 {
