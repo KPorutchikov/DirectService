@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectService.Application.Departments;
 using DirectService.Application.Departments.Commands.Create;
+using DirectService.Application.Departments.Commands.Delete;
 using DirectService.Application.Departments.Commands.Move;
 using DirectService.Application.Departments.Commands.UpdateLocations;
 using DirectService.Application.Departments.Queries;
@@ -68,5 +69,14 @@ public class DepartmentController : ControllerBase
         var command = new MoveDepartmentCommand(id, request.NewParentId);
         
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpDelete("{departmentId:guid}")]
+    public async Task<EndpointResult<Guid>> SoftDelete(
+        [FromRoute] Guid departmentId,
+        [FromServices] SoftDeleteDepartmentHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(departmentId, cancellationToken);
     }
 }

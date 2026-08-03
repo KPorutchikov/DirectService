@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json;
+using CSharpFunctionalExtensions;
 using DirectService.Application.Locations;
 using DirectService.Application.Locations.Command;
 using DirectService.Domain.Locations;
@@ -66,12 +67,30 @@ public class LocationsRepository : ILocationsRepository
     public async Task<Result<Location, Error>> GetById(Guid locationId, CancellationToken cancellationToken = default)
     {
         var location = await _dbContext.Locations
-            .Where(l => l.Id == locationId)
+            .Where(l => l.Id == locationId && l.IsActive == true)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (location == null)
             return Error.NotFound("value.not.found","Location is not found.");
 
         return location;
+    }
+    
+    public async Task<Result<Guid, Error>> SetLockLocationSql(Guid locationId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var departmentLocationResult = await _dbContext.Locations
+                .FromSql($"SELECT * FROM locations WHERE is_active = true AND id = {locationId} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+            
+            if (departmentLocationResult == null) return GeneralErrors.NotFound(locationId, "location");
+
+            return locationId;
+        }
+        catch (Exception e)
+        {
+            return Error.Failure("database", JsonSerializer.Serialize(e.Message));
+        }
     }
 }

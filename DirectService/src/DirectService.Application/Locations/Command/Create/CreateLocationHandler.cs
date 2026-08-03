@@ -7,7 +7,7 @@ using Shared;
 using Shared.Abstractions;
 using TimeZone = DirectService.Domain.Locations.TimeZone;
 
-namespace DirectService.Application.Locations.Command;
+namespace DirectService.Application.Locations.Command.Create;
 
 public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
 {

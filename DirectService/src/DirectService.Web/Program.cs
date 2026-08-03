@@ -3,12 +3,17 @@ using DirectService.Application;
 using DirectService.Application.Database;
 using DirectService.Application.Departments;
 using DirectService.Application.Departments.Commands;
+using DirectService.Application.Departments.Commands.Delete;
 using DirectService.Application.Departments.Queries;
 using DirectService.Application.Locations;
 using DirectService.Application.Locations.Command;
-using DirectService.Application.Locations.Command.Positions;
+using DirectService.Application.Locations.Command.Delete;
 using DirectService.Application.Locations.Queries;
+using DirectService.Application.Positions.Command;
+using DirectService.Application.Positions.Command.Delete;
 using DirectService.Infrastructure;
+using DirectService.Infrastructure.BackgroundServices;
+using DirectService.Infrastructure.BackgroundServices.SoftDelete;
 using DirectService.Infrastructure.Database;
 using DirectService.Infrastructure.Repositories.Departments;
 using DirectService.Infrastructure.Repositories.Locations;
@@ -66,6 +71,9 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddApplication();
 
+    builder.Services.AddOptions<SoftDeleteOptions>();
+    builder.Services.Configure<SoftDeleteOptions>(builder.Configuration.GetSection(SoftDeleteOptions.SOFT_DELETE));
+    
     builder.Services.AddScoped<DirectServiceDbContext>(_ => 
         new DirectServiceDbContext(builder.Configuration.GetConnectionString("Database")!));
 
@@ -82,8 +90,13 @@ try
     builder.Services.AddScoped<GetLocationsTopHandler>();
     builder.Services.AddScoped<GetDepartmentByFilterHandler>();
     builder.Services.AddScoped<GetLocationsByFilterHandler>();
+    builder.Services.AddScoped<SoftDeleteDepartmentHandler>();
+    builder.Services.AddScoped<SoftDeleteLocationHandler>();
+    builder.Services.AddScoped<SoftDeletePositionHandler>();
+    builder.Services.AddScoped<DeleteExpiredItems>();
     
-
+    builder.Services.AddHostedService<DeleteExpiredItemsBackgroundService>();
+    
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
