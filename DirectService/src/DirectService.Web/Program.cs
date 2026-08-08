@@ -5,6 +5,7 @@ using DirectService.Application.Departments;
 using DirectService.Application.Departments.Commands;
 using DirectService.Application.Departments.Commands.Delete;
 using DirectService.Application.Departments.Queries;
+using DirectService.Application.Departments.Queries.Trees;
 using DirectService.Application.Locations;
 using DirectService.Application.Locations.Command;
 using DirectService.Application.Locations.Command.Delete;
@@ -94,6 +95,11 @@ try
     builder.Services.AddScoped<SoftDeleteLocationHandler>();
     builder.Services.AddScoped<SoftDeletePositionHandler>();
     builder.Services.AddScoped<DeleteExpiredItems>();
+    
+    builder.Services.AddScoped<GetDepartmentsRootHandler>();
+    builder.Services.AddScoped<GetDepartmentChildrenHandler>();
+    builder.Services.AddScoped<GetDepartmentHierarchyHandler>();
+    builder.Services.AddScoped<GetDepartmentsByNameHandler>();
     
     builder.Services.AddHostedService<DeleteExpiredItemsBackgroundService>();
     
