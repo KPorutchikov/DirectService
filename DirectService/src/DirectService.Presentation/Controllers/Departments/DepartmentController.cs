@@ -5,6 +5,7 @@ using DirectService.Application.Departments.Commands.Delete;
 using DirectService.Application.Departments.Commands.Move;
 using DirectService.Application.Departments.Commands.UpdateLocations;
 using DirectService.Application.Departments.Queries;
+using DirectService.Application.Departments.Queries.Trees;
 using DirectService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -78,5 +79,40 @@ public class DepartmentController : ControllerBase
         CancellationToken cancellationToken)
     {
         return await handler.Handle(departmentId, cancellationToken);
+    }
+    
+    [HttpGet("/departments/tree")]
+    public async Task<EndpointResult<GetDepartmentsTreeDto[]?>> GetDepartmentsRoot(
+        [FromServices] GetDepartmentsRootHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(cancellationToken);
+    }
+    
+    [HttpGet("/departments/{departmentId:guid}/children")]
+    public async Task<EndpointResult<GetDepartmentsTreeDto[]?>> GetDepartmentChildren(
+        [FromRoute] Guid departmentId,
+        [FromServices] GetDepartmentChildrenHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(departmentId, cancellationToken);
+    }
+    
+    [HttpGet("/departments/{departmentId:guid}/ancestors")]
+    public async Task<EndpointResult<GetDepartmentsTreeDto[]?>> GetDepartmentHierarchy(
+        [FromRoute] Guid departmentId,
+        [FromServices] GetDepartmentHierarchyHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(departmentId, cancellationToken);
+    }
+    
+    [HttpGet("/departments/tree/search")]
+    public async Task<EndpointResult<GetDepartmentsTreeDto[]?>> GetDepartmentsByName(
+        [FromQuery] string departmentName,
+        [FromServices] GetDepartmentsByNameHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(departmentName, cancellationToken);
     }
 }
