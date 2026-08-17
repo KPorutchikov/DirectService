@@ -58,7 +58,7 @@ public class MoveDepartmentHandler: ICommandHandler<Guid, MoveDepartmentCommand>
         {
             transactionScope.Rollback();
             _logger.LogInformation($"Department {command.DepartmentId} not found");
-            return Error.Validation("department", $"Department {command.DepartmentId} not found").ToErrors();
+            return Error.Validation("department.not_found", $"Department {command.DepartmentId} not found").ToErrors();
         }
         
         // Проверка что новый родитель существует (если он указан в параметрах)
@@ -66,7 +66,7 @@ public class MoveDepartmentHandler: ICommandHandler<Guid, MoveDepartmentCommand>
         {
             transactionScope.Rollback();
             _logger.LogInformation($"New parent of department {command.NewParentId} is not found");
-            return Error.Validation("department", $"New parent of department {command.NewParentId} is not found").ToErrors();
+            return Error.Validation("department.move.cycle", $"New parent of department {command.NewParentId} is not found").ToErrors();
         }
         
         // Проверка что указанный новый родитель не является потомком
@@ -75,7 +75,7 @@ public class MoveDepartmentHandler: ICommandHandler<Guid, MoveDepartmentCommand>
         {
             transactionScope.Rollback();
             _logger.LogInformation($"Department {command.NewParentId} is child of {command.DepartmentId}");
-            return Error.Validation("department", $"Department {command.NewParentId} is child of {command.DepartmentId}").ToErrors();
+            return Error.Validation("department.move.cycle", $"Department {command.NewParentId} is child of {command.DepartmentId}").ToErrors();
         }
         
         // Проверка что департамент не является уже корнем дерева (при попытке его таким сделать)
@@ -83,7 +83,7 @@ public class MoveDepartmentHandler: ICommandHandler<Guid, MoveDepartmentCommand>
         {
             transactionScope.Rollback();
             _logger.LogInformation($"Department {command.DepartmentId} already is root of tree");
-            return Error.Validation("department", $"Department {command.DepartmentId} already is root of tree").ToErrors();
+            return Error.Validation("department.move.already.root", $"Department {command.DepartmentId} already is root of tree").ToErrors();
         }
         
         // Обновим объекты в БД
